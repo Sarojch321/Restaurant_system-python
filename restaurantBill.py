@@ -277,14 +277,29 @@ class Admin(User):
       fetch=True
     )
     print("\n----------------------- Veg Food Items ------------------------")
+    max_length = 0
+    for item in menu:
+        if max_length <= len(item[2]):
+          max_length = len(item[2])
+    max_length += 30
     for item in menu:
       if item[1] == 'veg':
-        print(f"{item[0]}    {item[2]}    Rs {item[3]:.2f}")
-
+        length = len(item[2])
+        joint_space = max_length - length
+        space = ''
+        for i in range(0, joint_space):
+          space += ' '
+        print(f"{item[0]}     {item[2]+space}  Rs {item[3]:.2f}")
+      
     print("\n---------------------- Non-veg Food Items ---------------------")
     for item in menu:
-      if item[1] == 'non-veg':
-        print(f"{item[0]}    {item[2]}    Rs {item[3]:.2f}")
+        if item[1] == 'non-veg':
+          length = len(item[2])
+          joint_space = max_length - length
+          space = ''
+          for i in range(0, joint_space):
+            space += ' '
+          print(f"{item[0]}     {item[2]+space}  Rs {item[3]:.2f}")
 
   def view_user(self):
     users = self.db.execute_query(
@@ -292,8 +307,46 @@ class Admin(User):
       fetch=True
     )
     print("\n------------------------- User List ---------------------------")
+    name_len = 0
+    phn_len = 0
+    email_len = 0
+    address_len = 0
     for user in users:
-      print(f"{user[0]}   {user[1]}   {user[2]}   {user[3]}   {user[4]}   {user[5]}")
+      if name_len <= len(user[1]):
+        name_len = len(user[1])
+      if phn_len <= len(user[2]):
+        phn_len = len(user[2])
+      if email_len <= len(user[3]):
+        email_len = len(user[3])
+      if address_len <= len(user[4]):
+        address_len = len(user[4])
+    name_len += 4
+    phn_len += 4
+    email_len += 4
+    address_len += 4
+
+    for user in users:
+      name_length = len(user[1])
+      phn_length = len(user[2])
+      email_length = len(user[3])
+      add_length = len(user[4])
+      name_space = ''
+      phn_space = ''
+      email_space = ''
+      add_space = ''
+      name_join = name_len - name_length
+      phn_join = phn_len - phn_length
+      email_join = email_len - email_length
+      add_join = address_len - add_length
+      for i in range(0, name_join):
+        name_space += ' '
+      for i in range(0, phn_join):
+        phn_space += ' '
+      for i in range(0, email_join):
+        email_space += ' '
+      for i in range(0, add_join):
+        add_space += ' '
+      print(f"{user[0]}    {user[1]+name_space}  {user[2]+phn_space}  {user[3]+email_space}  {user[4]+add_space}  {user[5]}")
     
 
 class Waiter(User):
@@ -309,15 +362,30 @@ class Waiter(User):
       print("No items in menu!")
       return
 
-    print("\n---------------------- Veg Food Items -------------------------")        
+    print("\n----------------------- Veg Food Items ------------------------")
+    max_length = 0
+    for item in menu:
+      if max_length <= len(item[2]):
+        max_length = len(item[2])
+    max_length += 30
     for item in menu:
       if item[1] == 'veg':
-        print(f"{item[0]}   {item[2]}   Rs {item[3]:.2f}")
-
-    print("\n--------------------- Non-veg Food Items ----------------------")
+        length = len(item[2])
+        joint_space = max_length - length
+        space = ''
+        for i in range(0, joint_space):
+          space += ' '
+        print(f"{item[0]}     {item[2]+space}  Rs {item[3]:.2f}")
+      
+    print("\n---------------------- Non-veg Food Items ---------------------")
     for item in menu:
       if item[1] == 'non-veg':
-        print(f"{item[0]}   {item[2]}   Rs {item[3]:.2f}")
+        length = len(item[2])
+        joint_space = max_length - length
+        space = ''
+        for i in range(0, joint_space):
+          space += ' '
+        print(f"{item[0]}     {item[2]+space}  Rs {item[3]:.2f}")
             
     order_items = []
     while True:
@@ -338,7 +406,7 @@ class Waiter(User):
             
         order_items.append({
           'food_id': food_id,
-          'name': item[1],
+          'name': item[2],
           'price': item[3],
           'quantity': qty
         })
@@ -371,9 +439,37 @@ class Waiter(User):
             
       self.db.conn.commit()
       print("\n--------------------------- Bill ------------------------------")
+      max_name_len = 0
+      max_price_len = 0
+      max_q_len = 0
       for item in order_items:
-        print(f"{item['name']} x{item['quantity']}: Rs {item['price'] * item['quantity']:.2f}")
-      print(f"Total: Rs {total:.2f}")
+        if max_name_len <= len(item['name']):
+          max_name_len = len(item['name'])
+        if max_price_len <= len(str(item['price'])):
+          max_price_len = len(str(item['price']))
+        if max_q_len <= len(str(item['quantity'])):
+          max_q_len = len(str(item['quantity']))
+      max_name_len += 8
+      max_price_len += 2
+      max_q_len += 8
+      for item in order_items:
+        name_len = len(item['name'])
+        price_len = len(str(item['price']))
+        q_len = len(str(item['quantity']))
+        name_space = ''
+        price_space = ''
+        q_space = ''
+        name_join = max_name_len - name_len
+        price_join = max_price_len - price_len
+        q_join = max_q_len - q_len
+        for i in range(0, name_join):
+          name_space += ' '
+        for i in range(0, price_join):
+          price_space += ' '
+        for i in range(0, q_join):
+          q_space += ' '
+        print(f"{item['name']+name_space} Rs {str(item['price'])+price_space}*  {str(item['quantity'])+q_space}Rs {item['price']* item['quantity']:.2f}")
+      print(f"\nTotal: Rs {total:.2f}")
             
     except sqlite3.Error:
       self.db.conn.rollback()
